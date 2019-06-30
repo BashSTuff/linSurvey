@@ -1,7 +1,8 @@
 # linSurvey
 
-GNU/Linux enumeration script written in BASH.
-Created to enumerate GNU/Linux machines on Hack The Box. Can possibly be used against UNIX machines. Visuals taking from HIGH ON COFFEE'S enumeration script. 
+GNU/Linux enumeration script written in BASH.<br>
+Created to enumerate GNU/Linux machines on Hack The Box. Can possibly be used against UNIX machines.<br> 
+Visuals taking from HIGH ON COFFEE'S enumeration script. 
 
 HOW TO USE:
 1. Upload script to victim:
